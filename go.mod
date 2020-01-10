@@ -1,3 +1,3 @@
-module github.com/svcpool/gosf-socketio
+module github.com/svcpool/golang-socketio
 
 go 1.12
