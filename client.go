@@ -21,6 +21,7 @@ Socket.io client representation
 type Client struct {
 	methods
 	Channel
+	url string
 }
 
 type DialParams struct {
@@ -50,6 +51,7 @@ You can use GetUrlByHost for generating correct url
 */
 func Dial(url string, tr transport.Transport, params DialParams) (*Client, error) {
 	c := &Client{}
+	c.url = url
 	c.initChannel()
 	c.initMethods()
 
@@ -68,6 +70,20 @@ func Dial(url string, tr transport.Transport, params DialParams) (*Client, error
 	go pinger(&c.Channel)
 
 	return c, nil
+}
+
+func Redial(c *Client) {
+	var err error
+	tr := transport.GetDefaultWebsocketTransport()
+	for {
+		c.conn, err = tr.Connect(c.url)
+		if err == nil {
+			break
+		}
+	}
+	go inLoop(&c.Channel, &c.methods)
+	go outLoop(&c.Channel, &c.methods)
+	go pinger(&c.Channel)
 }
 
 /**
