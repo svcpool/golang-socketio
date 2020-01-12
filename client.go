@@ -61,12 +61,12 @@ func Dial(url string, tr transport.Transport, params DialParams) (*Client, error
 
 	var err error
 	c.conn, err = tr.Connect(url)
+	if err != nil {
+		return nil, err
+	}
 	if params.Nsp != "" {
 		nspMsg := fmt.Sprintf("4%d%s", protocol.MessageTypeOpen, params.Nsp)
 		c.conn.WriteMessage(nspMsg)
-	}
-	if err != nil {
-		return nil, err
 	}
 
 	go inLoop(&c.Channel, &c.methods)
