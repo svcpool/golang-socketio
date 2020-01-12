@@ -1,12 +1,12 @@
 package gosocketio
 
 import (
+	"fmt"
 	"net"
 	"strconv"
-	"fmt"
 
-	"github.com/ambelovsky/gosf-socketio/transport"
 	"github.com/ambelovsky/gosf-socketio/protocol"
+	"github.com/ambelovsky/gosf-socketio/transport"
 )
 
 const (
@@ -21,7 +21,9 @@ Socket.io client representation
 type Client struct {
 	methods
 	Channel
-	url string
+	url    string
+	params DialParams
+	tr     transport.Transport
 }
 
 type DialParams struct {
@@ -52,6 +54,8 @@ You can use GetUrlByHost for generating correct url
 func Dial(url string, tr transport.Transport, params DialParams) (*Client, error) {
 	c := &Client{}
 	c.url = url
+	c.params = params
+	c.tr = tr
 	c.initChannel()
 	c.initMethods()
 
@@ -72,18 +76,11 @@ func Dial(url string, tr transport.Transport, params DialParams) (*Client, error
 	return c, nil
 }
 
-func Redial(c *Client) {
+func Redial(c *Client) (*Client, error) {
 	var err error
-	tr := transport.GetDefaultWebsocketTransport()
-	for {
-		c.conn, err = tr.Connect(c.url)
-		if err == nil {
-			break
-		}
-	}
-	go inLoop(&c.Channel, &c.methods)
-	go outLoop(&c.Channel, &c.methods)
-	go pinger(&c.Channel)
+	c, err = Dial(c.url, c.tr, c.params)
+
+	return c, err
 }
 
 /**
