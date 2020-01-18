@@ -58,6 +58,7 @@ func Dial(url string, tr transport.Transport, params DialParams) (*Client, error
 	c.tr = tr
 	c.initChannel()
 	c.initMethods()
+	c.Client = c
 
 	var err error
 	c.conn, err = tr.Connect(url)
@@ -67,6 +68,7 @@ func Dial(url string, tr transport.Transport, params DialParams) (*Client, error
 	if params.Nsp != "" {
 		nspMsg := fmt.Sprintf("4%d%s", protocol.MessageTypeOpen, params.Nsp)
 		c.conn.WriteMessage(nspMsg)
+		c.Emit(params.Nsp, nil)
 	}
 
 	go inLoop(&c.Channel, &c.methods)

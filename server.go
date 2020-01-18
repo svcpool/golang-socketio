@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/graarh/golang-socketio/protocol"
+	"github.com/svcpool/golang-socketio/protocol"
 	"github.com/graarh/golang-socketio/transport"
 	"math/rand"
 	"net/http"

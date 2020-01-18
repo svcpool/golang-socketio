@@ -3,7 +3,7 @@ package gosocketio
 import (
 	"encoding/json"
 	"errors"
-	"github.com/graarh/golang-socketio/protocol"
+	"github.com/svcpool/golang-socketio/protocol"
 	"log"
 	"time"
 )
@@ -24,6 +24,9 @@ func send(msg *protocol.Message, c *Channel, args interface{}) error {
 		}
 	}()
 
+	//sioClient := c.(*Client)
+	namespace := c.Client.params.Nsp
+	msg.Nsp = namespace
 	if args != nil {
 		json, err := json.Marshal(&args)
 		if err != nil {

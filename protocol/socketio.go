@@ -44,8 +44,14 @@ func typeToText(msgType int) (string, error) {
 	return "", ErrorWrongMessageType
 }
 
+var nspId = 0
+
 func Encode(msg *Message) (string, error) {
 	result, err := typeToText(msg.Type)
+	if msg.Nsp != "" {
+		result = result + msg.Nsp + "," + strconv.Itoa(nspId)
+		nspId++
+	}
 	if err != nil {
 		return "", err
 	}
@@ -64,7 +70,7 @@ func Encode(msg *Message) (string, error) {
 	}
 
 	if msg.Type == MessageTypeAckResponse {
-		return result + "[" + msg.Args + "]", nil
+		return result +  "[" + msg.Args + "]", nil
 	}
 
 	jsonMethod, err := json.Marshal(&msg.Method)
